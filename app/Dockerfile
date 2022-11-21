@@ -16,4 +16,4 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-CMD jupyter-lab --config /app/jupyter_notebook_config.py
+CMD uvicorn server:app --host 0.0.0.0 --port 8080 --reload-dir

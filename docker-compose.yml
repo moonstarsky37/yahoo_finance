@@ -2,10 +2,21 @@ version: '3'
 services:
   dev:
     build: .
+    env_file:
+      - ./app/.env
     volumes:
       - ./:/app
     ports:
       - 50000:8888
+
+  app:
+    build: ./app
+    env_file:
+      - ./app/.env
+    volumes:
+      - ./app:/app
+    ports:
+      - 50001:8080
 
   db:
     image: postgres:14.4
