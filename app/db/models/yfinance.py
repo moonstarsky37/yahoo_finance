@@ -1,7 +1,7 @@
 # coding: utf-8
 from sqlalchemy import BigInteger, Column, DateTime, Numeric, String, text
 
-from models import BaseModel
+from db.models import BaseModel
 
 
 class YfinanceModel(BaseModel):

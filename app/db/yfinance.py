@@ -2,17 +2,17 @@ import logging
 from datetime import datetime
 
 from sqlalchemy import and_
-from sqlalchemy.sql.expression import select, insert, update, delete
+from sqlalchemy.sql.expression import select
 from sqlalchemy.orm import Session
 
-from models.yfinance import YfinanceModel
+from db.models.yfinance import YfinanceModel
 
 from typing import List
 
 
-class Yfinance():
+class YfinanceDao():
     def __init__(self) -> None:
-        pass
+        self.logger: logging.Logger = logging.getLogger(__name__)
 
     @staticmethod
     def get_yfinance_by_t_and_ticker(session: Session, t: datetime, ticker: str) -> YfinanceModel:
@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     res = []
     with session.begin() as sess:
-        yfinance = Yfinance()
+        yfinance = YfinanceDao()
         start, end = current_date, current_date+timedelta(days=1)
         print(start)
         print(end)

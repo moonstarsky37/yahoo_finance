@@ -8,6 +8,7 @@ services:
       - ./:/app
     ports:
       - 50000:8888
+      - 51111:8080
 
   app:
     build: ./app
