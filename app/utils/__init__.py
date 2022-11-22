@@ -1,4 +1,4 @@
-from finance import FinanceLoader
+from utils.finance import FinanceLoader
 
 __all__ = [
     'FinanceLoader'

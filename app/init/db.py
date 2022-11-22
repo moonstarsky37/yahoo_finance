@@ -20,5 +20,4 @@ class DbInitializer():
         )
 
     def migrate(self):
-        with self.db_session.begin() as sess:
-            YfinanceModel.metadata.create_all(self.db_engine)
+        YfinanceModel.metadata.create_all(self.db_engine)
