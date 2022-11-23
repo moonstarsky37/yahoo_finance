@@ -9,10 +9,10 @@ from db.models.yfinance import YfinanceModel
 
 class DbInitializer():
     def __init__(self) -> None:
-        do_echo: bool = True if settings().mode.upper(
-        ) in {'DEVELOPMENT', 'TEST', 'DEBUG'} else False
+        # do_echo: bool = True if settings().mode.upper(
+        # ) in {'DEVELOPMENT', 'TEST', 'DEBUG'} else False
         self.db_engine: Engine = create_engine(
-            settings().v0.db.dsn, echo=do_echo)
+            settings().v0.db.dsn)
         self.db_session: Session = sessionmaker(
             bind=self.db_engine,
             expire_on_commit=False,

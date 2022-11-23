@@ -1,12 +1,17 @@
 import os
+import logging
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Request
 
 from api.schema.yfinance import YfinanceResponse, Yfinance
 
 from init import db_initializer
 from db.yfinance import YfinanceDao
+
+logger: logging.Logger = logging.getLogger(__name__)
+
+logger.info("Initialize yfinance_router_v0...")
 
 yfinance_router_v0: APIRouter = APIRouter(
     prefix=os.path.join("/", "yfinance", "v0"),
@@ -15,7 +20,8 @@ yfinance_router_v0: APIRouter = APIRouter(
 
 
 @yfinance_router_v0.get("/", status_code=status.HTTP_200_OK, response_model=YfinanceResponse)
-def get_last_by_ticker(ticker: str):
+def get_last_by_ticker(ticker: str, request: Request):
+    logger.info("Get request {}".format(request.base_url))
     yfinance = YfinanceDao()
 
     current: datetime = datetime.now()

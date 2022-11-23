@@ -100,6 +100,7 @@ class FinanceLoader():
         end: Union[datetime, str] = datetime.now()+timedelta(days=1),
         tickers_spliter: str = " "
     ) -> pd.DataFrame:
+        logger.info("FinanceLoader processing yfinance output...")
 
         tickers: List[str] = FinanceLoader.split_ticker(tickers, tickers_spliter) if isinstance(
             tickers, str) else tickers
@@ -112,6 +113,7 @@ class FinanceLoader():
             return None
 
         res_yf = FinanceLoader.process_yf(res_yf, tickers)
+        logger.info("FinanceLoader processing yfinance output...finish")
 
         return res_yf
 

@@ -18,8 +18,9 @@ def get_all_tickers() -> List[str]:
 
 def get_new_finance():
     loader = FinanceLoader()
+    tickers = [i+'.TW' for i in get_all_tickers()]
     yf_res = loader(
-        tickers="2330.TW 2451.TW",
+        tickers=tickers,
         start=datetime.now()+timedelta(days=-1),
         end=datetime.now()
     )

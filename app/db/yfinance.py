@@ -9,13 +9,17 @@ from db.models.yfinance import YfinanceModel
 
 from typing import List
 
+logger: logging.Logger = logging.getLogger(__name__)
+
 
 class YfinanceDao():
     def __init__(self) -> None:
-        self.logger: logging.Logger = logging.getLogger(__name__)
+        pass
 
     @staticmethod
     def get_yfinance_by_t_and_ticker(session: Session, t: datetime, ticker: str) -> YfinanceModel:
+        logger.info(
+            "Get yfinance by time and ticker: t={}, ticker={}".format(t, ticker))
         return session.query(YfinanceModel).filter(
             and_(
                 YfinanceModel.datetime == t,
@@ -25,6 +29,8 @@ class YfinanceDao():
 
     @staticmethod
     def get_yfinance_by_trange_and_ticker(session: Session, start: datetime, end: datetime, ticker: str) -> List[YfinanceModel]:
+        logger.info(
+            "Get yfinance by time range and ticker: start={}, end={}, ticker={}".format(start, end, ticker))
         stamt = select(
             YfinanceModel
         ).select_from(
@@ -41,6 +47,8 @@ class YfinanceDao():
 
     @staticmethod
     def get_yfinance_by_trange_and_tickers(session: Session, start: datetime, end: datetime, tickers: List[str]) -> List[YfinanceModel]:
+        logger.info(
+            "Get yfinance by time range and tickers: start={}, end={}, ticker={}".format(start, end, tickers))
         return session.query(YfinanceModel).filter(
             and_(
                 YfinanceModel.datetime >= start,
@@ -51,11 +59,13 @@ class YfinanceDao():
 
     @staticmethod
     def insert(session: Session, model: YfinanceModel) -> None:
+        logger.info("Insert yfinance")
         session.add(model)
         session.commit()
 
     @staticmethod
     def insert_bulk(session: Session, models: List[YfinanceModel]) -> None:
+        logger.info("Insert yfinances")
         session.bulk_save_objects(models)
         session.commit()
 
