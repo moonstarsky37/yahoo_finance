@@ -1,7 +1,11 @@
+import logging
+
 import unittest
 from tests import *
 
 from jobs.yfinance_parser import get_new_finance
+
+logging.getLogger().setLevel(logging.INFO)
 
 
 class YfinanceParserTestCase(unittest.TestCase):
@@ -13,8 +17,3 @@ class YfinanceParserTestCase(unittest.TestCase):
 
     def test_yfinance_parser(self):
         get_new_finance()
-
-
-suite = unittest.TestSuite()
-suite.addTest(YfinanceParserTestCase("test_yfinance_parser"))
-unittest.TextTestRunner(verbosity=2).run(suite)

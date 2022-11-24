@@ -3,12 +3,12 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import yfinance as yf
-
+from tqdm import tqdm
 
 from typing import List, Union
 
 
-logger: logging.Logger = logging.Logger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class FinanceLoader():
@@ -75,21 +75,15 @@ class FinanceLoader():
         tickers: List[str] = FinanceLoader.split_ticker(tickers, tickers_spliter) if isinstance(
             tickers, str) else tickers
 
-        if len(tickers) == 1:
-            res_yf.dropna(subset=columns, how="all", axis=0, inplace=True)
-            res_yf['Ticker'] = tickers[0]
-            res_yf = res_yf[["Ticker"]+columns]
-            res_yf.reset_index(inplace=True)
-            return res_yf
-
         stocks = []
-        for ticker in tickers:
-            tmp_stock = res_yf[[(column, ticker) for column in columns]].copy()
+        for ticker in tqdm(tickers):
+            tmp_stock = res_yf[[(column, ticker) for column in columns]].copy() if len(
+                tickers) > 1 else res_yf
             tmp_stock.columns = columns
             tmp_stock.dropna(subset=columns, how="all", axis=0, inplace=True)
             tmp_stock['Ticker'] = ticker
             tmp_stock = tmp_stock[["Ticker"]+columns]
-            tmp_stock.reset_index(inplace=True)
+            tmp_stock.reset_index(names='datetime', inplace=True)
             stocks += [tmp_stock]
         return pd.concat(stocks)
 
