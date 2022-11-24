@@ -41,5 +41,5 @@ def get_new_finance():
         YfinanceModel(**d) for d in yf_res_dicts]
     yfinanceDao: YfinanceDao = YfinanceDao()
     with db_initializer.db_session.begin() as sess:
-        yfinanceDao.insert_bulk(sess, yf_res_models)
+        yfinanceDao.insert_bulk_on_conflict_do_nothing(sess, yf_res_models)
     return

@@ -65,7 +65,7 @@ class YfinanceDao():
         session.commit()
 
     @staticmethod
-    def insert_bulk(session: Session, models: List[YfinanceModel]) -> None:
+    def insert_bulk_on_conflict_do_nothing(session: Session, models: List[YfinanceModel]) -> None:
         logger.info("Insert yfinances")
         stamt = pg.insert(YfinanceModel).values(
             [i.dict() for i in models]).on_conflict_do_nothing()
