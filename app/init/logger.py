@@ -2,20 +2,30 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 
+from configs import settings
+
 from typing import List
 
 
 class LoggBase():
     def __init__(
         self,
-        level=logging.DEBUG,
         format="%(levelname)s  %(name)s %(module)s:%(lineno)s - %(funcName)s() - %(asctime)s: %(message)s",
         datefmt="%Y-%m-%dT%H:%M:%S"
     ) -> None:
-        self.level = level
-        self.format = format
-        self.datefmt = datefmt
+        self.__set_level()
+        self.format: str = format
+        self.datefmt: str = datefmt
         logging.getLogger().setLevel(self.level)
+
+    def __set_level(self):
+        self.level = settings().mode.upper()
+        if self.level in {'DEV', 'DEVELOPMENT', 'DEBUG', "TRACE", "TEST"}:
+            self.level = logging.DEBUG
+        elif self.level in {'PROD', 'PRODUCTION'}:
+            self.level = logging.ERROR
+        else:
+            self.level = logging.INFO
 
 
 class LoggerInitializer(LoggBase):

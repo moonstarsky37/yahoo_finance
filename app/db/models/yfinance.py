@@ -1,5 +1,6 @@
 # coding: utf-8
-from sqlalchemy import BigInteger, Column, DateTime, Numeric, String, text
+from sqlalchemy import Column, text
+from sqlalchemy.dialects.postgresql import BIGINT, TIMESTAMP, NUMERIC, VARCHAR
 
 from db.models import BaseModel
 
@@ -7,16 +8,14 @@ from db.models import BaseModel
 class YfinanceModel(BaseModel):
     __tablename__ = 'yfinance'
 
-    datetime = Column(DateTime(True), primary_key=True, nullable=False)
-    ticker = Column(String(10), primary_key=True, nullable=False)
-    adjclose = Column(Numeric)
-    close = Column(Numeric)
-    high = Column(Numeric)
-    low = Column(Numeric)
-    open = Column(Numeric)
-    volume = Column(BigInteger)
-    createdat = Column(DateTime(True), nullable=False,
-                       server_default=text("CURRENT_TIMESTAMP"))
-    updatedat = Column(DateTime(True), nullable=False,
-                       server_default=text("CURRENT_TIMESTAMP"))
-    deletedat = Column(DateTime(True))
+    datetime = Column(TIMESTAMP, primary_key=True)
+    ticker = Column(VARCHAR(10), primary_key=True)
+    adjclose = Column(NUMERIC)
+    close = Column(NUMERIC)
+    high = Column(NUMERIC)
+    low = Column(NUMERIC)
+    open = Column(NUMERIC)
+    volume = Column(BIGINT)
+    createdat = Column(TIMESTAMP)
+    updatedat = Column(TIMESTAMP)
+    deletedat = Column(TIMESTAMP)

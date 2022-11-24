@@ -2,7 +2,8 @@ import logging
 from datetime import datetime
 
 from sqlalchemy import and_
-from sqlalchemy.sql.expression import select
+from sqlalchemy.sql.expression import select, insert
+from sqlalchemy.dialects import postgresql as pg
 from sqlalchemy.orm import Session
 
 from db.models.yfinance import YfinanceModel
@@ -66,7 +67,9 @@ class YfinanceDao():
     @staticmethod
     def insert_bulk(session: Session, models: List[YfinanceModel]) -> None:
         logger.info("Insert yfinances")
-        session.bulk_save_objects(models)
+        stamt = pg.insert(YfinanceModel).values(
+            [i.dict() for i in models]).on_conflict_do_nothing()
+        session.execute(stamt)
         session.commit()
 
 

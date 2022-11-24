@@ -77,7 +77,7 @@ class FinanceLoader():
 
         if len(tickers) == 1:
             res_yf.dropna(subset=columns, how="all", axis=0, inplace=True)
-            res_yf['Ticker'] = ticker
+            res_yf['Ticker'] = tickers[0]
             res_yf = res_yf[["Ticker"]+columns]
             res_yf.reset_index(inplace=True)
             return res_yf

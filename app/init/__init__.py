@@ -6,6 +6,7 @@ db_initializer = DbInitializer()
 _ = LoggerInitializer('db', ['sqlalchemy'])
 _ = LoggerInitializer('api', [])
 _ = LoggerInitializer('utils', [])
+_ = LoggerInitializer('jobs', [])
 
 
 def startup():
