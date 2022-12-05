@@ -42,4 +42,4 @@ We design the router initialization step
 in "init" and "init.api", also complete the startup, shutdown function
 We add a new unitest for api which is reference in document in FastAPI.
 
-Then 
+Then the homework is to add a time job to crawler per day and insert to db
