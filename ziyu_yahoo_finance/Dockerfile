@@ -19,7 +19,7 @@ RUN apt-get update && \
         sqlalchemy==1.4.44 \
         yfinance==0.1.87 \
         uvicorn==0.20.0 \
-        fastapi==0.87.0 \
+        fastapi==0.88.0 \
         Pillow \
         imgur-python\
         jupyter \

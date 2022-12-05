@@ -8,6 +8,7 @@ from configs.db import DBSettings
 
 class Setting(BaseModel):
     db: DBSettings
+    # router_prefix: str = '/v0/api'
 
 
 class Settings(BaseSettings):

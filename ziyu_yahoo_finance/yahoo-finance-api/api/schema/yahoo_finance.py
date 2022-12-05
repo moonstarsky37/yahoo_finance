@@ -1,0 +1,26 @@
+from datetime import datetime
+
+from pydantic import BaseModel
+
+from typing import List, Optional
+
+class YfinanceSchema(BaseModel):
+    datetime: datetime
+    ticker: str
+    adjclose: float
+    close: float
+    high: float
+    low: float
+    open: float
+    volume: int
+    updatedat: datetime
+
+class GetYfinanceByDSingleTimeAndTickerResponse(BaseModel):
+    status_code: int
+    msg: str
+    data: Optional[YfinanceSchema]
+
+class GetYfinanceByTimeIntervalAndTickerResponse(BaseModel):
+    status_code: int
+    msg: str
+    data: List[YfinanceSchema]

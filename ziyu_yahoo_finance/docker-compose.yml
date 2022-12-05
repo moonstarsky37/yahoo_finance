@@ -2,13 +2,13 @@ version: '3'
 services:
   dev:
     build: .
-    # env_file:
-    #   - ./app/.env
+    env_file:
+      - .env
     volumes:
       - ./:/app
     ports:
       - 60000:8888 # jupyterlab
-      - 60001:8080 # fastapi by uvicorn
+      - 60001:8000 # fastapi by uvicorn
   db:
     image: postgres:14.4
     environment:

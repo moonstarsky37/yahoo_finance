@@ -1,6 +1,6 @@
 version: '3'
 services:
-  dev:
+  dev: 
     build: .
     env_file:
       - ./app/.env
