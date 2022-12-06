@@ -58,10 +58,10 @@ class YfinanceDao():
     def insert_bulk_do_nothing_on_conflict(
         session: Session, 
         models: List[YfinanceModel]) -> None:
-        datas = [i.dict() for i in models]
+        datas = [i.as_dict() for i in models]
         insert_statement = insert(YfinanceModel).values(datas)
         upsert_statement = insert_statement.on_conflict_do_nothing(
-            constraint=f"{YfinanceModel.name}_pkey"
+            constraint=f"{YfinanceModel.__tablename__}_pkey"
         )
         session.execute(upsert_statement)
         session.commit()

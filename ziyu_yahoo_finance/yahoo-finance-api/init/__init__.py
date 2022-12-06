@@ -4,7 +4,7 @@ from init.logger import LoggerInitializer
 from init.scheduler import yfinance_crawler_scheduler
 
 db_initializer = DbInitializer()
-yf_crawler_scheduler = yfinance_crawler_scheduler(db_initializer)
+yf_crawler_scheduler = yfinance_crawler_scheduler(db_initializer.session)
 
 _ = LoggerInitializer('db', ['sqlalchemy'])
 _ = LoggerInitializer('api', [])

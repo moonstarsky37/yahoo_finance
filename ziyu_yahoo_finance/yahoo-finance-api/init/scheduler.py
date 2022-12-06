@@ -5,10 +5,11 @@ from apscheduler.triggers.cron import CronTrigger
 
 from jobs import download_yesterday
 
-def yfinance_crawler_scheduler(db_initializer) -> BackgroundScheduler:
+def yfinance_crawler_scheduler(db_session) -> BackgroundScheduler:
     scheduler: BackgroundScheduler = BackgroundScheduler()
     scheduler.add_job(
-        download_yesterday(db_initializer),
+        download_yesterday,
+        args=[db_session],
         trigger=CronTrigger.from_crontab('* * * * *')
     )
     return scheduler

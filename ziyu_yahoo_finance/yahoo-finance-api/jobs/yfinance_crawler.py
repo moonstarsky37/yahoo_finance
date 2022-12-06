@@ -1,22 +1,20 @@
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
-from datetime import datetime
+from datetime import timedelta, date
 import requests
 import yfinance as yf
 
 
 from dao import YfinanceDao
+from dao.models.postgresql_yfinance import YfinanceModel
 
 from typing import List
 
 def get_all_tickers() -> str:
-    url = 'https://quality.data.gov.tw/dq_download_json.php'
-    num_id = '11549'
-    md5_check = 'bb878d47ffbe7b83bfc1b41d0b24946e'
-    r = requests.get(f'{url}?nid={num_id}&md5_url={md5_check}')
-    print(r.text, r.status_code)
-    return [i["證券代號"] for i in r.json()]
+    url = 'https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL?response=open_data'
+    df_tickers_data = pd.read_csv(f'{url}')
+    return list(df_tickers_data["證券代號"].values)
 
 
 def process_dataframe(stock, tickers=get_all_tickers()):
@@ -36,28 +34,27 @@ def process_dataframe(stock, tickers=get_all_tickers()):
     return stock
 
 
-def download_yesterday(db_initializer):
-    print('download_yesterday')
+def download_yesterday(db_session):
     try:
-        tickers = get_all_tickers()
+        tickers = ['2330', '0050']#get_all_tickers()
     except:
-        print('quality.data.gov.tw cannot get results')
+        print('get_all_tickers() cannot get results')
         return
     tickers_TW = [ i+'.TW' for i in tickers ]
-    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    yesterday = date.today() - timedelta(days=1)
     stock = yf.download(
         tickers=tickers_TW,
-        start=yesterday,
-        end=yesterday,
+        start=yesterday.strftime("%Y-%m-%d"),
+        end=date.today().strftime("%Y-%m-%d"),
         interval="1h", # minute
         ignore_tz=False
     )
-    df_stocks = process_dataframe(stock, tickers)
+    df_stocks = process_dataframe(stock, tickers_TW)
     stocks_dicts: List[dict] = df_stocks.to_dict(orient='records')
-    stocks_models: List[YfinanceDao] = [YfinanceDao(**d) for d in stocks_dicts]
+    stocks_models: List[YfinanceModel] = [YfinanceModel(**d) for d in stocks_dicts]
     yfinanceDao: YfinanceDao = YfinanceDao()
-    print(df_stocks)
-    with db_initializer.db_session.begin() as sess:
+    
+    with db_session.begin() as sess:
         yfinanceDao.insert_bulk_do_nothing_on_conflict(sess, stocks_models)
     return
     
