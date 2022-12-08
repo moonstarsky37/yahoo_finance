@@ -8,7 +8,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from configs import settings
 from jobs.yfinance_crawler import insert_stocks_models
-from decimal import Decimal
 
 
 class YFinanceCrawlerTestCase(unittest.TestCase):
@@ -19,19 +18,10 @@ class YFinanceCrawlerTestCase(unittest.TestCase):
     def tearDown(self):
         self.engine.dispose()
 
-    # @mock.patch('jobs.yfinance_crawler')
-    def test_models(self):
-        res = insert_stocks_models(self.session, commit=False)
+    @mock.patch('jobs.insert_stocks_models')
+    def test_models(self, mock_insert_stocks_models):
+        mock_insert_stocks_models.return_value = []
+        res = insert_stocks_models(self.session)
         self.assertIsInstance(res, list)
-        for row in res:
-            self.assertIsInstance(row[0], datetime)  # datetime(pk):TIMESTAMP
-            self.assertIsInstance(row[1], str)  # ticker(pk)  :VARCHAR(10)
-            self.assertIsInstance(row[2], Decimal)  # adjclose    :NUMERIC
-            self.assertIsInstance(row[3], Decimal)  # close       :NUMERIC
-            self.assertIsInstance(row[4], Decimal)  # high        :NUMERIC
-            self.assertIsInstance(row[5], Decimal)  # low         :NUMERIC
-            self.assertIsInstance(row[6], Decimal)  # open        :NUMERIC
-            self.assertIsInstance(row[7], int)  # volume      :BIGINT
-            self.assertIsInstance(row[8], datetime)  # createdat   :TIMESTAMP
-            self.assertIsInstance(row[9], datetime)  # updatedat   :TIMESTAMP
-            self.assertIsInstance(row[9], None)  # deletedat   :TIMESTAMP
+        # print(dir(res[0]), res[0].datetime)
+        list(map(lambda ins: self.assertIsInstance(ins, YfinanceModel), res))

@@ -3,8 +3,8 @@ from functools import lru_cache
 
 from pydantic import BaseSettings, BaseModel
 
-# from configs.db import DbSettings
 from configs.db import DBSettings
+
 
 class Setting(BaseModel):
     db: DBSettings
@@ -28,5 +28,3 @@ def settings() -> Settings:
 if __name__ == '__main__':
     settings = Settings()
     print(settings)
-
-

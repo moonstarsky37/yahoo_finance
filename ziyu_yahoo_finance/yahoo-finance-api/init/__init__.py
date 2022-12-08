@@ -13,9 +13,10 @@ _ = LoggerInitializer('jobs', [])
 
 def startup():
     db_initializer.migrate()
+    yf_crawler_scheduler.start()
 
 
 def shutdown():
     db_initializer.session.close_all()
     db_initializer.engine.dispose()
-    
+    yf_crawler_scheduler.shutdown()

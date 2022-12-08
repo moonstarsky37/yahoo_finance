@@ -17,6 +17,6 @@ services:
       - db/.env
     volumes:
       - ./db/pgdata:/var/lib/postgresql/data/pgdata
-      - ./db/init.d:/docker-entrypoint-initdb.d:r
+      - ./db/init.d:/docker-entrypoint-initdb.d
     ports:
       - 54321:5432

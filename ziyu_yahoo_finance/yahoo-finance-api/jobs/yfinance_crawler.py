@@ -1,39 +1,23 @@
+import logging
 import pandas as pd
-
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 import yfinance as yf
-
 
 from dao import YfinanceDao
 from dao.models.postgresql_yfinance import YfinanceModel
+from utils import FinanceLoader
+from configs import settings
 
 from typing import List
+
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 def get_all_tickers() -> str:
     url = 'https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL?response=open_data'
     df_tickers_data = pd.read_csv(f'{url}')
     return list(df_tickers_data["證券代號"].values)
-
-
-def process_dataframe(
-        stock: pd.DataFrame,
-        tickers: List[str] = get_all_tickers()) -> pd.DataFrame:
-    columns = ['Adj Close', 'Close', 'High', 'Low', 'Open', 'Volume']
-    stocks = []
-    for ticker in tickers:
-        tmp_stock = stock[[(column, ticker) for column in columns]].copy()
-        tmp_stock.columns = columns
-        tmp_stock['Ticker'] = ticker
-        tmp_stock = tmp_stock[["Ticker"]+columns]
-        tmp_stock.reset_index(names='datetime', inplace=True)
-        tmp_stock.dropna(subset=columns, how="all", axis=0, inplace=True)
-        stocks += [tmp_stock]
-
-    stock = pd.concat(stocks)
-    stock.columns = [''.join(x.lower().split())
-                     for x in stock.columns.tolist()]
-    return stock
 
 
 def download_yesterday() -> List[YfinanceModel]:
@@ -58,10 +42,44 @@ def download_yesterday() -> List[YfinanceModel]:
     return stocks_models
 
 
-def insert_stocks_models(db_session, commit: bool = True) -> list:
+def insert_stocks_models(db_session) -> List[YfinanceModel]:
+    logger.info("Getting yfinance stock...")
+    loader = FinanceLoader()
+    is_settings_dev_mode = settings().mode.upper() in [
+        'DEV', 'DEVELOPMENT', 'DEBUG']
+    if is_settings_dev_mode:
+        tickers = ['0050.TW', '2330.TW']
+        yf_res = loader(
+            tickers=tickers,
+            start='2022-12-01',
+            end='2022-12-03',
+            interval='1d'
+        )
+    else:
+        tickers = [i+'.TW' for i in get_all_tickers()]
+        yf_res = loader(
+            tickers=tickers,
+            start=datetime.now()+timedelta(days=-1),
+            end=datetime.now()
+        )
+    if yf_res.empty:
+        return
+
+    yf_res.columns = [''.join(x.lower().split())
+                      for x in yf_res.columns.tolist()]
+
+    yf_res_dicts: List[dict] = yf_res.to_dict(orient='records')
+
     yfinanceDao: YfinanceDao = YfinanceDao()
-    stocks_models: List[YfinanceModel] = download_yesterday()
+
+    stocks_models: List[YfinanceModel] = [
+        YfinanceModel(**d) for d in yf_res_dicts]
     with db_session.begin() as sess:
-        fetch_results = yfinanceDao.insert_bulk_do_nothing_on_conflict(
-            sess, stocks_models, commit=commit)
+        fetch_results: List[YfinanceModel] = yfinanceDao. \
+            insert_bulk_do_nothing_on_conflict(
+                sess, stocks_models)
+        if is_settings_dev_mode:
+            sess.rollback()
+        else:
+            sess.commit()
     return fetch_results
